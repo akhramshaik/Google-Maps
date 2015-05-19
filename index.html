@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+  <title>Google Maps Multiple Markers</title> 
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+</head> 
+<body>
+  <div id="googleMap" style="width:561px;height:650px"></div>
+  
+  <script>
+    // Define your locations: HTML content for the info window, latitude, longitude
+    var locations = [
+      ['<h4>Guntur Nprodax India</h4>', 16.306652, 80.436540],
+      ['<h4>Vijayawada</h4>', 16.506174, 80.648015],
+	   ['<h4>Vizag India</h4>', 17.686816, 83.218482],
+	   ['<h4>Kurnool</h4>', 15.828126, 78.037279],
+	   ['<h4>Kadapa India</h4>', 14.467354, 78.824134],
+	   ['<h4>Madanapalle</h4>', 13.550000, 78.500000],
+	   ['<h4>Mumbai India</h4>', 19.075984, 72.877656],
+	   ['<h4>Ahmedabad</h4>', 23.022505, 72.571362],
+	   ['<h4>Chennai</h4>', 13.082680, 80.270718],
+	   ['<h4>Coimbatore</h4>', 11.016844, 76.955832],
+	   ['<h4>New Delhi</h4>', 28.644371, 77.219678]  
+	  
+    ];
+    
+    // Setup the different icons and shadows
+    var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';
+    
+    var icons = [
+      iconURLPrefix + 'red-dot.png',
+      iconURLPrefix + 'blue-dot.png',
+      iconURLPrefix + 'orange-dot.png'
+     
+    ]
+    var iconsLength = icons.length;
+
+    var map = new google.maps.Map(document.getElementById('googleMap'), {
+      zoom: 5,
+      center: new google.maps.LatLng(22.2323552,80.2649705),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeControl: false,
+      streetViewControl: false,
+      panControl: false,
+      zoomControlOptions: {
+         position: google.maps.ControlPosition.LEFT_BOTTOM
+      }
+    });
+
+    var infowindow = new google.maps.InfoWindow({
+      maxWidth: 160
+    });
+
+    var markers = new Array();
+    
+    var iconCounter = 0;
+    
+    // Add the markers and infowindows to the map
+    for (var i = 0; i < locations.length; i++) {  
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+        map: map,
+        icon: icons[iconCounter]
+      });
+
+      markers.push(marker);
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][0]);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+      
+      iconCounter++;
+      // We only have a limited number of possible icon colors, so we may have to restart the counter
+      if(iconCounter >= iconsLength) {
+      	iconCounter = 0;
+      }
+    }
+
+    function autoCenter() {
+      //  Create a new viewpoint bound
+      var bounds = new google.maps.LatLngBounds();
+      //  Go through each...
+      for (var i = 0; i < markers.length; i++) {  
+				bounds.extend(markers[i].position);
+      }
+      //  Fit these bounds to the map
+      map.fitBounds(bounds);
+    }
+    autoCenter();
+  </script> 
+</body>
+</html>
